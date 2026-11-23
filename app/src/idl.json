@@ -1,0 +1,394 @@
+{
+  "address": "3T8VSbh6k1sEStgASQ3epLhCqdP2dv4WxVyAD4RMPCqj",
+  "metadata": {
+    "name": "solana_task_manager",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "complete_task",
+      "docs": [
+        "Marca la tarea como completada. Solo el creador."
+      ],
+      "discriminator": [
+        109,
+        167,
+        192,
+        41,
+        129,
+        108,
+        220,
+        196
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "signer": true,
+          "relations": [
+            "task"
+          ]
+        },
+        {
+          "name": "task",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_task",
+      "docs": [
+        "Crea una tarea. El id es el contador actual del perfil."
+      ],
+      "discriminator": [
+        194,
+        80,
+        6,
+        180,
+        232,
+        127,
+        48,
+        171
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  102,
+                  105,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              }
+            ]
+          }
+        },
+        {
+          "name": "task",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  97,
+                  115,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              },
+              {
+                "kind": "account",
+                "path": "profile.task_count",
+                "account": "Profile"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "delete_task",
+      "docs": [
+        "Cierra la cuenta de la tarea y devuelve la renta al creador.",
+        "Regla de negocio: SOLO si la tarea ya está completada."
+      ],
+      "discriminator": [
+        112,
+        220,
+        10,
+        109,
+        3,
+        168,
+        46,
+        73
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "task"
+          ]
+        },
+        {
+          "name": "task",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_profile",
+      "docs": [
+        "Crea el perfil del usuario (una sola vez por wallet)."
+      ],
+      "discriminator": [
+        32,
+        145,
+        77,
+        213,
+        58,
+        39,
+        251,
+        234
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  102,
+                  105,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_task",
+      "docs": [
+        "Edita título/descripción. Solo el creador y solo si no está completada."
+      ],
+      "discriminator": [
+        100,
+        51,
+        124,
+        168,
+        211,
+        208,
+        42,
+        228
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "task"
+          ]
+        },
+        {
+          "name": "task",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Profile",
+      "discriminator": [
+        184,
+        101,
+        165,
+        188,
+        95,
+        63,
+        127,
+        188
+      ]
+    },
+    {
+      "name": "Task",
+      "discriminator": [
+        79,
+        34,
+        229,
+        55,
+        88,
+        90,
+        55,
+        84
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "Solo el creador de la tarea puede realizar esta operación"
+    },
+    {
+      "code": 6001,
+      "name": "EmptyTitle",
+      "msg": "El título no puede estar vacío"
+    },
+    {
+      "code": 6002,
+      "name": "TitleTooLong",
+      "msg": "El título supera los 64 caracteres"
+    },
+    {
+      "code": 6003,
+      "name": "DescriptionTooLong",
+      "msg": "La descripción supera los 200 caracteres"
+    },
+    {
+      "code": 6004,
+      "name": "TaskAlreadyCompleted",
+      "msg": "La tarea ya está completada"
+    },
+    {
+      "code": 6005,
+      "name": "TaskNotCompleted",
+      "msg": "La tarea debe estar completada antes de poder eliminarla"
+    }
+  ],
+  "types": [
+    {
+      "name": "Profile",
+      "docs": [
+        "Perfil de un usuario: cuenta relacionada con todas sus tareas.",
+        "PDA: [\"profile\", owner]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "task_count",
+            "docs": [
+              "Contador monotónico: el id de la próxima tarea.",
+              "También es el componente que hace única cada PDA de tarea."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Task",
+      "docs": [
+        "Una tarea on-chain.",
+        "PDA: [\"task\", creator, id.to_le_bytes()]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "completed",
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "PROFILE_SEED",
+      "type": "bytes",
+      "value": "[112, 114, 111, 102, 105, 108, 101]"
+    },
+    {
+      "name": "TASK_SEED",
+      "type": "bytes",
+      "value": "[116, 97, 115, 107]"
+    }
+  ]
+}
